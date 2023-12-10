@@ -1,0 +1,70 @@
+﻿@model MellonBank.ViewModels.AccountDataViewModel
+@{
+    ViewData["Title"] = "Account Page";
+}
+
+<h1>Account</h1>
+
+<table class="table">
+    <thead>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="6">
+                <div>
+                    <strong>Account Number:</strong> @Model.AccountNumber
+                    <br />
+                    <strong>Balance:</strong> @Model.AccountBalance
+                    <br />
+                    <strong>CustomerAfm:</strong> @Model.CustomerAfm
+                    <br />
+                    <strong>Branch:</strong> @Model.Branch
+                    <br />
+                    <strong>AccountType:</strong> @Model.AccountType
+                    <br />
+                    <hr />
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<body>
+    <button id="open-popup-button">New money transfer</button>
+
+    <div id="popup-container">
+        <form id="amount-form" asp-controller="Customer" asp-action="Transaction" method="post">
+            <input type="hidden" id="afm" name="afm" value="@Model.CustomerAfm">
+            <input type="hidden" id="fromAccount" name="fromAccount" value="@Model.AccountNumber">
+
+            <label for="amount">Amount (€): </label>
+            <input type="text" id="amount" name="amount" required>
+
+            <label for="account-number">Recipient account number</label>
+            <input type="text" id="account-number" name="toAccount" required>
+
+            <button id="submit-button">Submit</button>
+        </form>
+        <button id="close-popup-button">Close</button>
+    </div>
+    <div class="wallet-container">
+        <div class="balance-text">Wallet Balance</div>
+        <span id="balanceAmount">@Model.AccountBalance €</span>
+        <br />
+        <span id="balanceAmount">@Model.otherCurrencyBalance $</span>
+    </div>
+    <script>
+        const openPopupButton = document.getElementById('open-popup-button');
+        const closePopupButton = document.getElementById('close-popup-button');
+        const popupContainer = document.getElementById('popup-container');
+
+        openPopupButton.addEventListener('click', () => {
+            popupContainer.style.display = 'block';
+        });
+
+        closePopupButton.addEventListener('click', () => {
+            popupContainer.style.display = 'none';
+        });
+    </script>
+
+</body>

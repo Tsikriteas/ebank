@@ -1,0 +1,62 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "Delete User";
+}
+@* Bootstrap *@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+<div class="container">
+    <h2>Delete User</h2>
+    <p>Are you sure you want to delete the user with email: <strong>@ViewBag.Email</strong>?</p>
+
+    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</div>
+
+<div class="modal fade" id="deletemodal" tabindex="-1" role="dialog" aria-labelledby="deletemodallabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletemodallabel">confirm deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>are you sure you want to delete the user with email: <strong>@ViewBag.Email</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <form asp-action="delete" asp-route-email="@Model" method="post">
+                    <input type="submit" value="delete" class="btn btn-danger" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the user with afm: <strong>@ViewBag.Email</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <form asp-action="DeleteConfirmed" asp-route-afm="@ViewBag.Email" method="post">
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>

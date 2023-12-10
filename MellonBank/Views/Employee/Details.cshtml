@@ -1,0 +1,81 @@
+﻿@model  MellonBank.ViewModels.CustomerDetailsViewModel
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<h1>Details</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.customerAfm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(x => x.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(x => x.LastName)
+            </td>
+            <td>
+                    @Html.DisplayFor(x => x.Email)
+            </td>
+            <td>
+                    @Html.DisplayFor(x => x.Address)
+            </td>
+            <td>
+                    @Html.DisplayFor(x => x.customerAfm)
+            </td>
+            <td>
+                    @Html.DisplayFor(x => x.PhoneNumber)
+            </td>
+            <td>
+                <a asp-action="CreateBankAccount" asp-controller="Employee" asp-route-afm="@Model.customerAfm">Add bank account</a> |
+                <a asp-action="Edit" asp-route-afm="@Model.customerAfm">Edit</a> |
+                <a asp-action="Details" asp-route-afm="@Model.customerAfm">Details</a> |
+                <a asp-action="Delete" asp-route-afm="@Model.customerAfm">Delete</a>
+            </td>
+        </tr>
+        @if (Model != null && Model.Accounts != null)
+        {
+            <tr>
+                <td colspan="6">
+                    @foreach (var account in Model.Accounts)
+                    {
+                        <div>
+                            <strong>Account Number:</strong> @Html.DisplayFor(model => account.AccountNumber)
+                            <br />
+                            <strong>Balance:</strong> @Html.DisplayFor(model => account.AccountBalance)
+                            <hr />
+                            <form asp-action="DeleteAccount" asp-controller="Employee" method="post">
+                                <input type="hidden" name="afm" value="@Model.customerAfm" />
+                                <input type="hidden" name="accountNumber" value="@account.AccountNumber" />
+                                <input type="submit" value="Delete Account" class="btn btn-danger" />
+                            </form>
+                        </div>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

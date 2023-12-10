@@ -1,0 +1,140 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+	var user = await UserManager.GetUserAsync(User);
+	var isAuthenticated = SignInManager.IsSignedIn(User);
+	var userAfm = isAuthenticated ? user?.Afm : null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="icon" type="image/x-icon" href="/images/icons8-bank-100.ico">
+	<title>@ViewData["Title"] - MellonBank</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/MellonBank.styles.css" asp-append-version="true" />
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+	<header>
+		<nav class="navbar navbar-expand-xl navbar-light bg-white border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				@if (isAuthenticated && User.IsInRole("Employee"))
+				{
+					<a class="navbar-brand" asp-area="" asp-controller="Employee" asp-action="Index" style="color:DodgerBlue;"><b>MellonBank</b></a>
+				}
+				else if (isAuthenticated && User.IsInRole("Customer"))
+				{
+					@if (userAfm != null)
+					{
+						<a class="navbar-brand" asp-area="" asp-controller="Customer" asp-action="Index" asp-route-afm="@userAfm" style="color:DodgerBlue;"><b>MellonBank</b></a>
+					}
+				}
+				else
+				{
+					<a class="navbar-brand" asp-area="" asp-controller="Auth" asp-action="Login" style="color:DodgerBlue;"><b>MellonBank</b></a>
+				}
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1">
+						@if (User.IsInRole("Employee"))
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employee Dashboard</a>
+							</li>
+							<form class="d-flex" asp-controller="Employee" asp-action="IndexSearch" method="get">
+								<div class="flexContainer">
+									<input type="search" id="afm" name="afm" class="form-control" placeholder="Search By AFM" />
+									<button id="user-not-found" class="btn btn-outline-success btn-sm" type="submit">Search</button>
+								</div>
+							</form>
+							<li class="nav-item">
+								<select id="dropdownId" class="form-select">
+								</select>
+							</li>
+						}
+						else if (User.IsInRole("Customer"))
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Index" asp-route-afm="@userAfm">Customer Dashboard</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Details" asp-route-afm="@userAfm">Customer Details</a>
+							</li>
+							<li class="nav-item">
+								<select id="dropdownId" class="form-select">
+								</select>
+							</li>
+						}
+						else
+						{
+							<li class="nav-item">
+								<select id="dropdownId" class="form-select">
+								</select>
+							</li>
+						}
+					</ul>
+				</div>
+				<partial name="_LoginPartial" />
+			</div>
+		</nav>
+	</header>
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		var userNotFoundButton = document.getElementById("user-not-found");
+
+		if (userNotFoundButton) {
+			userNotFoundButton.addEventListener("click", function () {
+				var userNotFoundMessage = "@TempData["UserNotFound"]";
+				if (userNotFoundMessage) {
+					alert("Customer not found!");
+				}
+				return true;
+			});
+		}
+	});
+	$(document).ready(function () {
+		$.ajax({
+			url: '/api/MellonRates',
+			type: 'GET',
+			success: function (data) {
+				if (data && data.length > 0) {
+					$('#dropdownId').append('<option value="-1">Mellon Rates</option>');
+					data.forEach(function (rate) {
+						var optionAud = '<option value="' + rate.id + '">' + 'AUD: ' + rate.aud + '</option>';
+						var optionChf = '<option value="' + rate.id + '">' + 'CHF: ' + rate.chf + '</option>';
+						var optionGbp = '<option value="' + rate.id + '">' + 'GBP: ' + rate.gbp + '</option>';
+						var optionUsd = '<option value="' + rate.id + '">' + 'USD: ' + rate.usd + '</option>';
+
+						$('#dropdownId').append(optionAud);
+						$('#dropdownId').append(optionChf);
+						$('#dropdownId').append(optionGbp);
+						$('#dropdownId').append(optionUsd);
+					});
+				}
+			},
+			error: function (error) {
+				console.log('Error fetching rates:', error);
+			}
+		});
+	});
+</script>

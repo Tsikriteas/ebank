@@ -1,0 +1,44 @@
+﻿@model MellonBank.ViewModels.BankAccountViewModel;
+@{
+	ViewData["Title"] = "Create bank account Page";
+}
+
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+	<div class="col-md-4">
+		<section>
+			<form id="account" method="post">
+				<h2>Give the elements.</h2>
+				<hr />
+				<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+				<div class="form-floating mb-3">
+					<input asp-for="CustomerAfm" class="form-control" aria-required="true" placeholder="CustomerAfm" />
+					<label asp-for="CustomerAfm" class="form-label">CustomerAfm</label>
+					<span asp-validation-for="CustomerAfm" class="text-danger"></span>
+				</div>
+				<div class="form-floating mb-3">
+					<input asp-for="AccountBalance" class="form-control" aria-required="true" placeholder="Balance" />
+					<label asp-for="AccountBalance" class="form-label">Balance</label>
+					<span asp-validation-for="AccountBalance" class="text-danger"></span>
+				</div>
+				<div class="form-floating mb-3">
+					<input asp-for="Branch" class="form-control" aria-required="true" placeholder="Branch" />
+					<label asp-for="Branch" class="form-label">Branch</label>
+					<span asp-validation-for="Branch" class="text-danger"></span>
+				</div>
+				<div class="form-floating mb-3">				
+					@Html.DropDownListFor(model => model.AccountType, Model.AvailableAccountTypes, new { @class = "form-control", aria_required = "true", placeholder = "AccountType" })
+					<span asp-validation-for="AccountType" class="text-danger"></span>
+				</div>
+	
+				<div>
+					<button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Submit</button>
+				</div>
+			</form>
+		</section>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

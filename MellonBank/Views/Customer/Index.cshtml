@@ -1,0 +1,132 @@
+﻿@model IEnumerable<MellonBank.ViewModels.AccountDataViewModel>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Customer Page";
+    var successMessage = TempData["success"] as string;
+    var errorMessage = TempData["error"] as string;
+    var user = await UserManager.GetUserAsync(User);
+    var isAuthenticated = SignInManager.IsSignedIn(User);
+    var userAfm = isAuthenticated ? user?.Afm : null;
+}
+
+<h1>Accounts</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6">
+                            @foreach (var account in Model)
+                            {
+                                <a href="@Url.Action("AccountDetails", "Customer", new { accountNumber = account.AccountNumber })">
+                                    <strong>Account Number:</strong> @Html.DisplayFor(model => account.AccountNumber)
+                                    <br />
+                                    <strong>Balance:</strong> @Html.DisplayFor(model => account.AccountBalance)
+                                    <hr />
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6 text-right">
+            @{
+                decimal totalBalance = 0m;
+            }
+
+            @foreach (var accountViewModel in Model)
+            {
+                totalBalance += accountViewModel.AccountBalance;
+            }
+
+            <p style="font-size: 24px; font-weight: bold;">Total Balance: @totalBalance</p>
+        </div>
+    </div>
+</div>
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup Form Example</title>
+    <style>
+        #popup-container {
+            display: none;
+            position: fixed;
+            margin: inherit;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: dimgrey;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px lightblue;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <button id="open-popup-button">Τransfer to my account</button>
+
+    <div id="popup-container">
+        <form id="amount-form" asp-controller="Customer" asp-action="Transaction" method="post">
+            <input type="hidden" id="afm" name="afm" value="@userAfm" />
+            <label for="amount">Amount (€): </label>
+            <input type="text" id="amount" name="amount" required>
+
+            <label for="fromAccount">From Account: </label>
+            <select id="fromAccount" name="fromAccount" required>
+                @foreach (var account in Model)
+                {
+                    <option value="@account.AccountNumber">@account.AccountNumber</option>
+                }
+            </select>
+
+            <label for="toAccount">To Account: </label>
+            <select id="toAccount" name="toAccount" required>
+                @foreach (var account in Model)
+                {
+                    <option value="@account.AccountNumber">@account.AccountNumber</option>
+                }
+            </select>
+
+            <button id="submit-button">Submit</button>
+        </form>
+
+        <button id="close-popup-button">Close</button>
+    </div>
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success">
+            @successMessage
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            @errorMessage
+        </div>
+    }
+    <script>
+        const openPopupButton = document.getElementById('open-popup-button');
+        const closePopupButton = document.getElementById('close-popup-button');
+        const popupContainer = document.getElementById('popup-container');
+
+        openPopupButton.addEventListener('click', () => {
+            popupContainer.style.display = 'block';
+        });
+
+        closePopupButton.addEventListener('click', () => {
+            popupContainer.style.display = 'none';
+        });
+    </script>
+
+</body>
